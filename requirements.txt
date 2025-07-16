@@ -1,0 +1,17 @@
+fastapi[standard]
+uvicorn 
+sqlalchemy
+alembic
+celery
+redis
+pymysql
+pylint
+pydantic 
+pydantic-settings
+psycopg2-binary
+gunicorn
+sqlmodel 
+passlib
+bcrypt
+pyjwt 
+python-decouple 

@@ -1,0 +1,53 @@
+services:
+   webapi:
+      image: project_template:latest
+      container_name: project_app
+      build:
+         context: .
+         dockerfile: Dockerfile
+      ports:
+         - "8000:8000"
+      volumes:
+      - ./backend:/app/backend:rw
+      develop:
+         watch:
+            - action: rebuild
+              path: .
+      depends_on:
+      - redis
+      - postgres
+
+   celery:
+      image: project_template:latest
+      container_name: project_celery
+      build:
+         context: .
+         dockerfile: Dockerfile
+      entrypoint: ""
+      command: ["/app/.venv/bin/celery", "-A", "backend.jobs.worker:app", "worker", "--loglevel=INFO", "--concurrency=4", "--prefetch-multiplier=4"]
+      depends_on:
+         - redis
+         - postgres
+
+   redis:
+      image: redis:7
+      ports:
+         - "6378:6379"
+      volumes:
+         - redisdata:/data
+      restart: always
+
+   postgres:
+      image: postgres
+      restart: always
+      environment:
+         POSTGRES_USER: postgres
+         POSTGRES_PASSWORD: postgres123
+         POSTGRES_DB: starterdb
+      ports:
+         - "5432:5432"
+      volumes:
+         - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+  redisdata:
