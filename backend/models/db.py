@@ -1,21 +1,31 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 from typing import Annotated
 
 from fastapi import Depends
-from sqlmodel import create_engine
-from sqlmodel import Session
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from ..core.config import settings
+from backend.core.config import settings
 
 # define the database engine
-engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+engine = create_async_engine(
+    str(settings.SQLALCHEMY_DATABASE_URI),
+    echo=False,
+    future=True
+)
 
-def get_db() -> Generator[Session, None, None]:
-   """
-   Dependency to get a database session.
-   """
-   with Session(engine) as session:
-      yield session
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """
+    Create a database session.
+    """
+    async_session = sessionmaker(
+        bind=engine,
+        class_=AsyncSession,
+        expire_on_commit=False
+    )
+    async with async_session() as session:
+        yield session
 
 # annotate the generator for better type hinting
-DbSession = Annotated[Session, Depends(get_db)]
+DbSession = Annotated[AsyncSession, Depends(get_db)]

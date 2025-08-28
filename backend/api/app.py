@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
-from backend.api.auth.route import auth_router
+from .auth.route import auth_router
+from .users.route import user_router
 
-# Add all API routers here (Allows for easy management of routes)
 api_router = APIRouter()
 api_router.include_router(auth_router)
+api_router.include_router(user_router)

@@ -24,7 +24,7 @@ services:
          context: .
          dockerfile: Dockerfile
       entrypoint: ""
-      command: ["/app/.venv/bin/celery", "-A", "backend.jobs.worker:app", "worker", "--loglevel=INFO", "--concurrency=4", "--prefetch-multiplier=4"]
+      command: ["/app/.venv/bin/celery", "-A", "backend.jobs.celery", "worker", "--loglevel=INFO", "--concurrency=4", "--prefetch-multiplier=4"]
       depends_on:
          - redis
          - postgres
